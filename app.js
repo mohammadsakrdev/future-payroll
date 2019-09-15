@@ -12,7 +12,7 @@ const csvWriter = createCsvWriter({
 const getFuturePayroll = require('./logic/get-future-payroll');
 
 program
-  .version('0.0.1')
+  .version('1.0.0')
   .description(
     'Calculate Future payroll and bonus dates for the next 12 months'
   );
@@ -33,5 +33,5 @@ program
       console.error(err);
     }
   });
-
+program.help();
 program.parse(process.argv);
