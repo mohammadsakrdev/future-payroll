@@ -33,7 +33,7 @@ _isWorkDay = (year, month, day) => {
 _getWorkDays = (year, month, days) => {
   let workdays = [];
   for (let i = 1; i <= days; i++) {
-    if (_isWorkDay(year, month - 1, i)) {
+    if (_isWorkDay(year, month, i)) {
       workdays.push(i);
     }
   }
@@ -49,10 +49,10 @@ _getWorkDays = (year, month, days) => {
  * @returns {Number} lastWorkingDay
  */
 _getLastWorkDay = (year, month, days) => {
-  let lastWorkingDay = '';
-  for (let i = days; i >= 0; i--) {
-    if (_isWorkDay(year, month - 1, i)) {
-      lastWorkingDay = `${i}-${month === 0 ? 12 : month}-${year}`;
+  let lastWorkingDay = null;
+  for (let i = days; i > 0; i--) {
+    if (_isWorkDay(year, month, i)) {
+      lastWorkingDay = new Date(year, month, i).toDateString();
       break;
     }
   }
@@ -68,14 +68,14 @@ _getLastWorkDay = (year, month, days) => {
  */
 _getBonusPaymentDay = (year, month) => {
   let bonusPaymentDay = '';
-  if (_isWorkDay(year, month - 1, 15)) {
-    bonusPaymentDay = `15-${month === 0 ? 12 : month}-${year}`;
+  if (_isWorkDay(year, month, 15)) {
+    bonusPaymentDay = new Date(year, month, 15).toDateString();
   } else {
     const days = _getDaysInMonth(year, month);
     for (let i = 16; i <= days; i++) {
-      const dayOfWeek = new Date(year, month - 1, i).getDay();
-      if (dayOfWeek === 3) {
-        bonusPaymentDay = `${i}-${month === 0 ? 12 : month}-${year}`;
+      const newDate = new Date(year, month, i);
+      if (newDate.getDay() === 3) {
+        bonusPaymentDay = newDate.toDateString();
         break;
       }
     }
@@ -91,16 +91,21 @@ _getBonusPaymentDay = (year, month) => {
  * @returns {Object} payroll
  */
 _getMonthPayroll = (year, month) => {
-  const days = _getDaysInMonth(year, month);
-  const salaryPaymentDate = _getLastWorkDay(year, month, days);
-  let bonusPaymentDate = new Date(year, month, 1);
+  let current = new Date(year, month, 1);
+  const days = _getDaysInMonth(current.getFullYear(), current.getMonth() + 1);
+  const salaryPaymentDate = _getLastWorkDay(
+    current.getFullYear(),
+    current.getMonth(),
+    days
+  );
+  let bonusPaymentDate = new Date(current);
   bonusPaymentDate.setMonth(bonusPaymentDate.getMonth() + 1);
   const bonusDate = _getBonusPaymentDay(
     bonusPaymentDate.getFullYear(),
     bonusPaymentDate.getMonth()
   );
   return {
-    month: `${month === 0 ? 12 : month}-${year}`,
+    month: current.getMonth() + 1 + '-' + current.getFullYear(), //`${month}-${year}`,
     salaryPaymentDate,
     bonusDate
   };
@@ -116,7 +121,7 @@ _getMonthPayroll = (year, month) => {
 module.exports = (year, month) => {
   let payroll = [];
   for (let i = 0; i <= 11; i++) {
-    let current = new Date(year, month, 1);
+    let current = new Date(year, month - 1, 1);
     current.setMonth(current.getMonth() + i);
     payroll.push(_getMonthPayroll(current.getFullYear(), current.getMonth()));
   }
