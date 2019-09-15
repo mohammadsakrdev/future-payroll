@@ -1,0 +1,15 @@
+{
+  "name": "future-payroll",
+  "version": "1.0.0",
+  "description": "Calculate Future payroll and bonus dates for the next 12 months",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Mohammad Sakr",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^2.20.0",
+    "json2csv": "4.5.3"
+  }
+}
